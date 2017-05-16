@@ -152,11 +152,11 @@ int main(void)
                         RC5_GetAddressBits(rc5_command),
                         RC5_GetCommandBits(rc5_command),
                         RC5_GetToggleBit(rc5_command));
-                if(RC5_GetAddressBits(rc5_command) == 20){
-                    if(RC5_GetCommandBits(rc5_command) == 5){
+                if(RC5_GetAddressBits(rc5_command) == 16){
+                    if(RC5_GetCommandBits(rc5_command) == 59){
                         amp_on();
                     }
-                    if(RC5_GetCommandBits(rc5_command) == 6){
+                    if(RC5_GetCommandBits(rc5_command) == 62){
                         amp_off();
                     }
                 }
