@@ -152,11 +152,21 @@ int main(void)
                         RC5_GetAddressBits(rc5_command),
                         RC5_GetCommandBits(rc5_command),
                         RC5_GetToggleBit(rc5_command));
+                // cyrus pre-amp
                 if(RC5_GetAddressBits(rc5_command) == 16){
                     if(RC5_GetCommandBits(rc5_command) == 59){
                         amp_on();
                     }
                     if(RC5_GetCommandBits(rc5_command) == 62){
+                        amp_off();
+                    }
+                }
+                // "lemon" remote
+                if(RC5_GetAddressBits(rc5_command) == 7){
+                    if(RC5_GetCommandBits(rc5_command) == 1){
+                        amp_on();
+                    }
+                    if(RC5_GetCommandBits(rc5_command) == 8){
                         amp_off();
                     }
                 }
