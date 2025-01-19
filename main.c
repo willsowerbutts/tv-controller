@@ -14,6 +14,7 @@
 #include "rc5.h"
 #include "necir.h"
 #include "version.h"
+#include "pins.h"
 
 /* pins
  * D9  (PB1) - relay coil (via NPN transistor)
@@ -37,51 +38,41 @@
  *   +----------------+-------------------------------+
  */
 
-// inputs
-#define PIN_AMP_ON   PD7
-#define PIN_IR_RX    PD2
-#define PIN_DAC_ON   PD3
-
-// outputs
-#define PIN_RELAY    PB1
-#define PIN_USER_LED PB5
-#define PIN_IR_TX    PD4 /* also update necir.c */
-
 uint16_t amp_off_timer;
 
-void relay_on(void)
+static void relay_on(void)
 {
     report("Relay: ON\n");
     PORTB |= _BV(PIN_RELAY);
 }
 
-void relay_off(void)
+static void relay_off(void)
 {
     report("Relay: OFF\n");
     PORTB &= ~_BV(PIN_RELAY);
 }
 
-void led_on(void)
+static void led_on(void)
 {
     PORTB |= _BV(PIN_USER_LED);
 }
 
-void led_off(void)
+static void led_off(void)
 {
     PORTB &= ~_BV(PIN_USER_LED);
 }
 
-bool is_amp_powered_on(void)
+static bool is_amp_powered_on(void)
 {
     return (PIND & _BV(PIN_AMP_ON));
 }
 
-bool is_dac_powered_on(void)
+static bool is_dac_powered_on(void)
 {
     return ! (PIND & _BV(PIN_DAC_ON));
 }
 
-void amp_on(void)
+static void amp_on(void)
 {
     if(is_amp_powered_on()){
         report("Amplifier: already ON\n");
@@ -94,7 +85,7 @@ void amp_on(void)
     amp_off_timer = 0;
 }
 
-void amp_off(void)
+static void amp_off(void)
 {
     if(!is_amp_powered_on()){
         report("Amplifier: already OFF\n");
@@ -107,7 +98,7 @@ void amp_off(void)
     amp_off_timer = 0;
 }
 
-void amp_off_delay(void)
+static void amp_off_delay(void)
 {
     if(!is_amp_powered_on()){
         report("Amplifier: already OFF\n");
@@ -117,7 +108,7 @@ void amp_off_delay(void)
     amp_off_timer = 30000; // a bit more than 0.1 millisecond each
 }
 
-void amp_off_delay_check(void)
+static void amp_off_delay_check(void)
 {
     switch(amp_off_timer){
         case 0: 
@@ -149,19 +140,19 @@ void amp_off_delay_check(void)
  * Dim:    0x11 0x28
  */
 
-void vol_up(void)
+static void vol_up(void)
 {
     send_nec_ir(0x11, 0x62);
     report("+");
 }
 
-void vol_down(void)
+static void vol_down(void)
 {
     send_nec_ir(0x11, 0x68);
     report("-");
 }
 
-void vol_mute(void)
+static void vol_mute(void)
 {
     send_nec_ir(0x11, 0x60);
     report("[mute]");

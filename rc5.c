@@ -1,7 +1,14 @@
-/* WRS - source is https://github.com/pinkeen/avr-rc5 */
+/* sourced from https://github.com/pinkeen/avr-rc5 by Filip Sobalski pinkeen@gmail.com */
+/* License is GNU General Public License 3 or later */
+
+/* 
+ * RC5 (36KHz Phillips protocol) Decoding library for AVR
+ * Copyright (c) 2011 Filip Sobalski <pinkeen@gmail.com>
+ * based on the idea presented by Guy Carpenter
+ * on http://www.clearwater.com.au/rc5
+ */
 
 #include "rc5.h"
-
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
@@ -24,11 +31,11 @@ typedef enum {
     STATE_END
 } State;
 
-const uint8_t trans[4] = {0x01, 0x91, 0x9b, 0xfb};
-volatile uint16_t command;
-uint8_t ccounter;
-volatile uint8_t has_new;
-State state = STATE_BEGIN;
+static const uint8_t trans[4] = {0x01, 0x91, 0x9b, 0xfb};
+static volatile uint16_t command;
+static uint8_t ccounter;
+static volatile uint8_t has_new;
+static State state = STATE_BEGIN;
 
 void RC5_Init()
 {

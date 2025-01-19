@@ -1,3 +1,6 @@
+/* sourced from https://github.com/pinkeen/avr-rc5 by Filip Sobalski pinkeen@gmail.com */
+/* License is GNU General Public License 3 or later */
+
 /* 
  * RC5 (36KHz Phillips protocol) Decoding library for AVR
  * Copyright (c) 2011 Filip Sobalski <pinkeen@gmail.com>
