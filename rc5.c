@@ -37,6 +37,7 @@ void RC5_Init()
 
     /* Set PD2 to input */
     DDRD &= ~_BV(PD2);
+    PORTD |= (_BV(PD2)); // enable pull-up
     
     /* Reset Timer1 Counter */
     TCCR1A = 0;

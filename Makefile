@@ -8,9 +8,9 @@ PROG_DEV=/dev/ttyUSB0
 PROG_BAUD=115200
 
 CCFLAGS=-DDEBUG
-CCFLAGS+=-Wall -Werror -W -Wno-unused-parameter -Wno-sign-compare -Wno-char-subscripts -g -Os -std=gnu99 -fdata-sections -ffunction-sections -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -mcall-prologues -fshort-enums -fno-strict-aliasing
+CCFLAGS+=-Wall -Werror -W -Wno-unused-parameter -Wno-sign-compare -Wno-char-subscripts -g -O2 -std=gnu99 -fdata-sections -ffunction-sections -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -mcall-prologues -fshort-enums -fno-strict-aliasing
 
-FIRMWARE_OBJS=main.o serial.o debug.o version.o rc5.o
+FIRMWARE_OBJS=main.o serial.o debug.o version.o rc5.o necir.o
 
 all:	firmware.hex
 

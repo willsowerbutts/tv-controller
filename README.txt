@@ -15,5 +15,5 @@ Version 2 hardware + software (Jan 2025 onwards)
  - Power control: Set amp power on/off when the DAC is powered on/off (the DAC does this automatically based on the SPDIF data feed from the TV)
  - Volume control: Receive RC5 IR codes from TV and relay as NEC IR codes to Topping E70 for volume up/down.
 
-TODO: delay amp power off?
-TODO: mute?
+On LG C4 OLED TV go to setup, "External Devices", then set the Optical Output as if it were connected to a Marantz (or Philips) Soundbar. Test different models until you receive RC5 codes.
+Connecting to the IR blaster socket on the TV stops the remote handset from producing IR signals itself.
