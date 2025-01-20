@@ -60,3 +60,5 @@ void serial_write(char *string)
     while(*p)
         serial_write_byte(*p++);
 }
+
+/* vim:set shiftwidth=4 expandtab: */

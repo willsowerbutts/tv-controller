@@ -156,3 +156,5 @@ ISR(INT0_vect)
     
     TCNT1 = 0;
 }
+
+/* vim:set shiftwidth=4 expandtab: */

@@ -46,3 +46,5 @@ static int debug_putchar(char c, FILE *stream)
 
     return 0;
 }
+
+/* vim:set shiftwidth=4 expandtab: */

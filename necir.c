@@ -1,5 +1,3 @@
-/* vim:set shiftwidth=4 expandtab: */
-
 #include "necir.h"
 #include <stdint.h>
 #include <stdio.h>
@@ -76,7 +74,7 @@ void send_nec_ir(uint8_t address, uint8_t command)
     nec_encode_byte(&message[16], command);  /* command byte */
     nec_encode_byte(&message[24], ~command); /* inverted command byte */
 
-    /* Send 9ms of 38kHz carrier */
+    /* Send 9ms of 38kHz */
     for(uint8_t n=0; n<16; n++){
         nec_burst_1();
     }
@@ -128,3 +126,5 @@ void send_nec_repeat(void) // *UNTESTED*
     /* Make sure we don't burn out the LED */
     nec_led_off();
 }
+
+/* vim:set shiftwidth=4 expandtab: */

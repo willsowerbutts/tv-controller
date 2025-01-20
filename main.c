@@ -1,5 +1,3 @@
-/* vim:set shiftwidth=4 expandtab: */
-
 #include <stdbool.h>
 #include <avr/io.h>
 #include <string.h>
@@ -301,3 +299,5 @@ int main(void)
 
     return 0;
 }
+
+/* vim:set shiftwidth=4 expandtab: */
