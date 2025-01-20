@@ -5,7 +5,7 @@
 #include <avr/io.h>
 #include "pins.h"
 
-/* ask delay.h to prefer shorter delays, since we're already delaying too little due to CPU overhead */
+/* ask delay.h to prefer shorter delays, since we have some CPU overhead also */
 #define __DELAY_ROUND_DOWN__ 1
 #include <util/delay.h>
 
