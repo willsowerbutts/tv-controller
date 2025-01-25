@@ -120,3 +120,10 @@ send a few keys over this serial terminal to test the various functions:
 |  N  | Turn amplifier on |
 |  F  | Turn amplifier off (immediately) |
 |  D  | Turn amplifier off (delayed) |
+
+## A note on Topping E70 firmware
+
+I found the Topping E70 suffered from frequent audio drop-outs when connected
+to the optical output of the LG TV. The solution was to upgrade the E70 firmware
+to [version 1.04](https://drive.google.com/file/d/1Iwp4hhrM1GvptI9PpsgWnCy6yguFDcb6/view)
+and then, in the DAC settings, increase the "PLL Bandwidth" parameter to 10.
