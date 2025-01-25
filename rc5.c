@@ -9,6 +9,7 @@
  */
 
 #include "rc5.h"
+#include "pins.h"
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
@@ -42,9 +43,9 @@ void RC5_Init()
     /* Set INT0 to trigger on any edge */
     EICRA |= _BV(ISC00);
 
-    /* Set PD2 to input */
-    DDRD &= ~_BV(PD2);
-    PORTD |= (_BV(PD2)); // enable pull-up
+    /* Set pin to input */
+    DDRD &= ~_BV(PIN_IR_RX);
+    PORTD |= (_BV(PIN_IR_RX)); // enable pull-up
     
     /* Reset Timer1 Counter */
     TCCR1A = 0;
