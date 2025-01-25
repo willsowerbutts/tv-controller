@@ -21,10 +21,9 @@ output which is connected to my DAC.  The TV also has an IR Blaster port which
 is connected to my control hardware.
 
 **DAC**: The DAC is a [Topping E70](https://www.toppingaudio.com/product-item/e70) 
-which operates as a combined DAC and a pre-amplifier (volume control). The XLR
-outputs of the DAC are connected to my power amplifier. The DAC has a 12V
-trigger output which is connected to my control hardware, and balanced XLR
-audio outputs which connect to the power amplifier.
+which operates as a combined DAC and a pre-amplifier (volume control). The
+balanced XLR audio outputs of the DAC are connected to my power amplifier. The
+DAC has a 12V trigger output which is connected to my control hardware.
 
 **Amplifier**: The amplifier is a dual mono power amplifier that I built using 
 [Hypex UcD modules](https://www.hypex.nl/products/amplifier-families/ucd-family/).
@@ -54,13 +53,14 @@ Both of these problems lead to me developing my own solution.
 My hardware receives and decodes IR signals from the TV, then uses an IR LED to
 transmit the equivalent volume/mute control codes to the Topping E70. When the
 TV sends IR codes they are normally sent from the remote control itself, but if
-something is connected to the IR Blaster port (a 3.5mm socket) it uses that
-instead. My hardware connects to the IR blaster port using an optocoupler.
+a device is connected to the IR Blaster port (a 3.5mm socket on the TV) it uses
+that instead. My hardware connects to the IR blaster port using an optocoupler.
 
-The E70 monitors the TOSLINK signal from the TV, turning itself on the TOSLINK
-signal is present and off when it is absent.  The E70 signals its power state
-using a 12V trigger output, and my hardware monitors this 12V output via an
-optocoupler and controls the amplifier power in response.
+The E70 DAC monitors the TOSLINK signal from the TV, turning itself on the
+TOSLINK signal is present and off after it is absent for a few seconds.  The
+E70 signals its power state using a 12V trigger output. My hardware monitors
+this 12V trigger output via an optocoupler and controls the amplifier power in
+response.
 
 My amplifier has a single momentary push button to turn it on or off, and an
 LED which lights up when it is powered on. My hardware has a small relay wired
@@ -89,10 +89,14 @@ Topping device online and wrote my own NEC IR code transmitter.
 
 ## Building and testing
 
-The schematic for the circuit can be seen here:
+The schematic for the circuit can be 
+[downloaded in PDF format](/kicad/schematic.pdf)
+or viewed here:
 ![Schematic](/kicad/schematic.png)
 
-I just soldered the components together on a bit of prototyping board:
+I soldered the components together on a bit of through-hole prototyping board. 
+The wires to the various equipment connect to push-in terminal blocks. The
+board is powered over USB from a spare phone charger.
 ![Board Photo](/board-photo.jpg)
 
 Unless you are using exactly the same equipment you will likely need to
