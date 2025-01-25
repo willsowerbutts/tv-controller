@@ -36,6 +36,38 @@
  *   +----------------+-------------------------------+
  */
 
+/* -- User LED -- */
+
+uint16_t user_led_off_timer = 0;
+
+static void user_led_off(void)
+{
+    PORTB &= ~_BV(PIN_USER_LED);
+}
+
+static void check_user_led(void)
+{
+    if(user_led_off_timer){
+        if(--user_led_off_timer == 0)
+            user_led_off();
+    }
+}
+
+static void user_led_on(void)
+{
+    PORTB |= _BV(PIN_USER_LED);
+}
+
+static void user_led_on_timer(uint16_t ticks)
+{
+    user_led_off_timer = ticks;
+    user_led_on();
+}
+
+
+/* -- Amplifier power control -- */
+
+bool last_amp_power_on, last_dac_power_on;
 uint16_t amp_off_timer;
 
 static void relay_on(void)
@@ -48,16 +80,6 @@ static void relay_off(void)
 {
     report("Relay: OFF\n");
     PORTB &= ~_BV(PIN_RELAY);
-}
-
-static void led_on(void)
-{
-    PORTB |= _BV(PIN_USER_LED);
-}
-
-static void led_off(void)
-{
-    PORTB &= ~_BV(PIN_USER_LED);
 }
 
 static bool is_amp_powered_on(void)
@@ -106,8 +128,27 @@ static void amp_off_delay(void)
     amp_off_timer = 30000; // a bit more than 0.1 millisecond each
 }
 
-static void amp_off_delay_check(void)
+static void check_amp_power(void)
 {
+    bool amp_power_on, dac_power_on;
+
+    amp_power_on = is_amp_powered_on();
+    if(amp_power_on != last_amp_power_on){
+        report("Power amp is %s\n", amp_power_on?"ON":"OFF");
+        last_amp_power_on = amp_power_on;
+    }
+
+    dac_power_on = is_dac_powered_on();
+    if(dac_power_on != last_dac_power_on){
+        report("DAC is %s\n", dac_power_on?"ON":"OFF");
+        last_dac_power_on = dac_power_on;
+        // when the DAC changes power state, do the same for the power amp
+        if(dac_power_on)
+            amp_on();
+        else
+            amp_off_delay();
+    }
+
     switch(amp_off_timer){
         case 0: 
             return;             // no timer running
@@ -120,8 +161,11 @@ static void amp_off_delay_check(void)
     }
 }
 
+
+/* -- Infrared RX Transmitter -- */
+
 /* Topping E70 DAC:
- * Control codes can be found here
+ * Control codes can be found here:
  * https://www.audiosciencereview.com/forum/index.php?threads/remote-codes-for-topping.10708/
  * Topping RC-15A
  * Power:  0x11 0x18
@@ -156,14 +200,82 @@ static void vol_mute(void)
     report("[mute]");
 }
 
-int main(void)
+
+/* -- Infrared RX Receiver -- */
+
+static void check_infrared_input(void)
 {
-    bool amp_power_on, last_amp_power_on = false;
-    bool dac_power_on, last_dac_power_on = false;
     uint16_t rc5_command;
-    uint16_t led_off_timer = 0;
+
+    if(RC5_NewCommandReceived(&rc5_command)){
+        RC5_Reset(); // prepare for next command
+        if(RC5_GetStartBits(rc5_command) != 3){
+            report("RC5 command: BAD -- %d start bits\n", RC5_GetStartBits(rc5_command));
+        }else{
+            bool report_msg = true;
+
+            if(RC5_GetAddressBits(rc5_command) == 16){
+                user_led_on_timer(5000);
+                switch(RC5_GetCommandBits(rc5_command)){
+                    case 17: vol_down(); report_msg = false; break;
+                    case 16: vol_up();   report_msg = false; break;
+                    case 13: vol_mute(); report_msg = false; break;
+                }
+            }
+
+            if(report_msg){
+                report("RC5 addr %d, cmd %d, tog %d\n",
+                        RC5_GetAddressBits(rc5_command),
+                        RC5_GetCommandBits(rc5_command),
+                        RC5_GetToggleBit(rc5_command));
+            }
+        }
+    }
+}
+
+
+/* -- Serial Console Input -- */
+
+static void check_serial_input(void)
+{
     int serial_in;
 
+    serial_in = serial_read_byte();
+    switch(serial_in){
+        case 'n':
+        case 'N':
+        case '1':
+            amp_on();
+            break;
+        case 'f':
+        case 'F':
+        case '0':
+            amp_off();
+            break;
+        case 'd':
+        case 'D':
+            amp_off_delay();
+            break;
+        case 'm':
+        case 'M':
+            vol_mute();
+            break;
+        case '-':
+            vol_down();
+            break;
+        case '+':
+            vol_up();
+            break;
+        default:
+            break;
+    }
+}
+
+
+/* -- Initialisation and main loop -- */
+
+int main(void)
+{
     // enable the watchdog timer
     wdt_enable(WDTO_4S);
 
@@ -179,7 +291,7 @@ int main(void)
 
     // ensure startup is in the desired state
     relay_off();
-    led_off();
+    user_led_off();
 
     // setup relay output pin
     PORTB &= ~(_BV(PIN_RELAY));                      // set output low
@@ -208,7 +320,7 @@ int main(void)
     // initialise RC5 library -- this sets up the PIN_IR_RX for us
     RC5_Init();
 
-    // set these wrong so it forces a report at startup
+    // set these up to force a status report on our first loop
     last_amp_power_on = !is_amp_powered_on();
     last_dac_power_on = !is_dac_powered_on();
 
@@ -216,85 +328,10 @@ int main(void)
         wdt_reset();
         debug_periodic();
 
-        amp_power_on = is_amp_powered_on();
-        if(amp_power_on != last_amp_power_on){
-            report("Power amp is %s\n", amp_power_on?"ON":"OFF");
-            last_amp_power_on = amp_power_on;
-        }
-
-        dac_power_on = is_dac_powered_on();
-        if(dac_power_on != last_dac_power_on){
-            report("DAC is %s\n", dac_power_on?"ON":"OFF");
-            last_dac_power_on = dac_power_on;
-            // when the DAC changes power state, do the same for the power amp
-            if(dac_power_on)
-                amp_on();
-            else
-                amp_off_delay();
-        }
-
-        amp_off_delay_check();
-
-        serial_in = serial_read_byte();
-        switch(serial_in){
-            case 'n':
-            case 'N':
-            case '1':
-                amp_on();
-                break;
-            case 'f':
-            case 'F':
-            case '0':
-                amp_off();
-                break;
-            case 'd':
-            case 'D':
-                amp_off_delay();
-                break;
-            case 'm':
-            case 'M':
-                vol_mute();
-                break;
-            case '-':
-                vol_down();
-                break;
-            case '+':
-                vol_up();
-                break;
-            default:
-                break;
-        }
-
-        if(led_off_timer){
-            if(--led_off_timer == 0)
-                led_off();
-        }
-
-        if(RC5_NewCommandReceived(&rc5_command)){
-            RC5_Reset(); // prepare for next command
-            if(RC5_GetStartBits(rc5_command) != 3){
-                report("RC5 command: BAD -- %d start bits\n", RC5_GetStartBits(rc5_command));
-            }else{
-                bool report_msg = true;
-
-                if(RC5_GetAddressBits(rc5_command) == 16){
-                    led_on();
-                    led_off_timer = 5000;
-                    switch(RC5_GetCommandBits(rc5_command)){
-                        case 17: vol_down(); report_msg = false; break;
-                        case 16: vol_up();   report_msg = false; break;
-                        case 13: vol_mute(); report_msg = false; break;
-                    }
-                }
-
-                if(report_msg){
-                    report("RC5 addr %d, cmd %d, tog %d\n",
-                            RC5_GetAddressBits(rc5_command),
-                            RC5_GetCommandBits(rc5_command),
-                            RC5_GetToggleBit(rc5_command));
-                }
-            }
-        }
+        check_amp_power();
+        check_serial_input();
+        check_infrared_input();
+        check_user_led();
     }
 
     return 0;
