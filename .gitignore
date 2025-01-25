@@ -3,3 +3,4 @@
 *.lst
 *.swp
 version.c
+.DS_Store

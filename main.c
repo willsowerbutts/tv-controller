@@ -182,15 +182,15 @@ int main(void)
     led_off();
 
     // setup relay output pin
-    PORTB &= ~(_BV(PIN_RELAY));                      // disable pull-up
+    PORTB &= ~(_BV(PIN_RELAY));                      // set output low
     DDRB  |=  (_BV(PIN_RELAY));                      // set as output
 
     // setup user LED output pin
-    PORTB &= ~(_BV(PIN_USER_LED));                   // disable pull-up
+    PORTB &= ~(_BV(PIN_USER_LED));                   // set output low
     DDRB  |=  (_BV(PIN_USER_LED));                   // set as output
 
     // setup IR transmitter LED output pin
-    PORTD &= ~(_BV(PIN_IR_TX));                      // disable pull-up
+    PORTD &= ~(_BV(PIN_IR_TX));                      // set output low
     DDRD  |=  (_BV(PIN_IR_TX));                      // set as output
 
     // setup IR input pin

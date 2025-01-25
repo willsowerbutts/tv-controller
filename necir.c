@@ -17,13 +17,13 @@
 static inline void nec_led_on(void)
 {
     /* IR transmitter LED on */
-    PORTD |= _BV(PD4);
+    PORTD |= (_BV(PIN_IR_TX));
 }
 
 static inline void nec_led_off(void)
 {
     /* IR transmitter LED off */
-    PORTD &= ~_BV(PD4);
+    PORTD &= ~(_BV(PIN_IR_TX));
 }
 
 /* this time is half a cycle of the 38KHz carrier */
