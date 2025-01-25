@@ -90,10 +90,10 @@ Topping device online and wrote my own NEC IR code transmitter.
 ## Building and testing
 
 The schematic for the circuit can be seen here:
-(/kicad/schematic.png)
+![Schematic](/kicad/schematic.png)
 
 I just soldered the components together on a bit of prototyping board:
-(/board-photo.jpg)
+![Board Photo](/board-photo.jpg)
 
 Unless you are using exactly the same equipment you will likely need to
 modify the software to suit your equipment.
